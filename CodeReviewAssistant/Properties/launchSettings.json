@@ -1,0 +1,12 @@
+{
+  "profiles": {
+    "CodeReviewAssistant": {
+      "commandName": "Project",
+      "launchBrowser": true,
+      "environmentVariables": {
+        "ASPNETCORE_ENVIRONMENT": "Development"
+      },
+      "applicationUrl": "https://localhost:64370;http://localhost:64371"
+    }
+  }
+}
