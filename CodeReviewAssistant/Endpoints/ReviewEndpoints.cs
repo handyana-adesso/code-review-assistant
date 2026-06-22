@@ -15,8 +15,18 @@ public static class ReviewEndpoints
 
         group.MapPost("/", HandleReviewAsync)
             .WithName("HandleReview")
-            .WithSummary("")
-            .WithDescription("")
+            .WithSummary("Reviews a code snippet for security, performance, and best-practice issues.")
+            .WithDescription("""
+                Sends a code snippet to a locally running Gemma 4 model (via Ollama) and
+                returns a structured review covering security, performance, and best practices.
+
+                The request body takes the code and an optional language hint. Everything runs
+                on the local machine — no cloud call, no API key. The first request may be
+                slower while the model loads into memory.
+
+                Returns 400 if the code is empty, and 502 if Ollama is unreachable or the model
+                isn't pulled.
+                """)
             .Produces<ReviewResult>(StatusCodes.Status200OK)
             .Produces(StatusCodes.Status400BadRequest)
             .Produces(StatusCodes.Status502BadGateway);
