@@ -36,7 +36,98 @@ ollama pull gemma4:e4b
 
 ---
 
-## 2. Project structure
+## 2. Architecture
+
+### 2A. Architecture overview
+
+```mermaid
+flowchart LR
+    Dev([Developer]) -->|paste code| UI
+    subgraph LOCAL["🔒 Your machine — nothing leaves it"]
+        direction LR
+        UI["React + Vite UI(TypeScript)"] -->|"POST /api/review"| API[".NET 8 Minimal API"]
+        API --> SVC["CodeReviewService"]
+        SVC -->|"POST /api/generate"| OLL[("Ollama · gemma4:e4b")]
+    end
+    OLL -.->|review JSON| UI
+```
+
+### 2B. Request lifecycle (sequence)
+
+```mermaid
+sequenceDiagram
+    actor User
+    participant UI as React UI
+    participant API as .NET Minimal API
+    participant SVC as CodeReviewService
+    participant OLL as Ollama (gemma4:e4b)
+
+    User->>UI: Paste code, click "Run review"
+    UI->>API: POST /api/review { code, language }
+    API->>SVC: ReviewAsync(request)
+    SVC->>OLL: POST /api/generate (prompt, num_ctx, temperature)
+    Note over OLL: Loads model into VRAM (first call)then generates tokens one by one
+    OLL-->>SVC: { response, total_duration }
+    SVC-->>API: ReviewResult
+    API-->>UI: 200 OK { model, review, durationMs }
+    UI-->>User: Render the review
+    Note over UI,OLL: All on localhost — nothing leaves the machine
+```
+
+### 2C. Backend class diagram
+
+```mermaid
+classDiagram
+    class ReviewEndpoints {
+        <>
+        +MapReviewEndpoints(IEndpointRouteBuilder) IEndpointRouteBuilder
+        -HandleReview(ReviewRequest, ICodeReviewService, CancellationToken) Task~IResult~
+    }
+    class ICodeReviewService {
+        <>
+        +ReviewAsync(ReviewRequest, CancellationToken) Task~ReviewResult~
+    }
+    class CodeReviewService {
+        -OllamaOptions _options
+        -HttpClient _http
+        +ReviewAsync(ReviewRequest, CancellationToken) Task~ReviewResult~
+        -BuildPrompt(ReviewRequest) string
+    }
+    class OllamaOptions {
+        +string BaseUrl
+        +string Model
+    }
+    class ReviewRequest {
+        <>
+        +string Code
+        +string Language
+    }
+    class ReviewResult {
+        <>
+        +string Model
+        +string Review
+        +long DurationMs
+    }
+    class OllamaGenerateResponse {
+        +string Response
+        +long TotalDuration
+    }
+    class OllamaException {
+        <>
+    }
+
+    CodeReviewService ..|> ICodeReviewService : implements
+    ReviewEndpoints ..> ICodeReviewService : calls
+    CodeReviewService ..> OllamaOptions : reads
+    CodeReviewService ..> ReviewRequest : consumes
+    CodeReviewService ..> ReviewResult : returns
+    CodeReviewService ..> OllamaGenerateResponse : parses
+    CodeReviewService ..> OllamaException : throws
+```
+
+---
+
+## 3. Project structure
 
 ```
 CodeReviewAssistant/            # .NET 8 backend
@@ -71,9 +162,9 @@ calls **Ollama's** endpoint, `/api/generate` — that hop is server-side and loc
 
 ---
 
-## 3. Running it
+## 4. Running it
 
-### 3A. For the talk (reliable — one process)
+### 4A. For the talk (reliable — one process)
 
 Build the React app into `wwwroot`, then run only the backend:
 
@@ -90,7 +181,7 @@ Then open the URL `dotnet run` prints (e.g. http://localhost:5xxx). Two local
 processes total: `ollama serve` (usually already running) and `dotnet run`.
 No CORS, no dev server — this is what to present from.
 
-### 3B. While developing (hot reload)
+### 4B. While developing (hot reload)
 
 Run three processes; Vite proxies `/api` to the backend so there's **no CORS**:
 
@@ -108,7 +199,7 @@ port `dotnet run` prints.
 
 ---
 
-## 4. What to show on stage
+## 5. What to show on stage
 
 1. Click **Load example** — a deliberately flawed C# method
    (`sample-code/BadExample.cs`: SQL injection, undisposed connection, no null check).
@@ -127,7 +218,7 @@ the talk with one `ollama run` call so the live demo is snappy.
 
 ---
 
-## 5. Configuration
+## 6. Configuration
 
 `appsettings.json`:
 ```json
@@ -141,7 +232,7 @@ the talk with one `ollama run` call so the live demo is snappy.
 
 ---
 
-## 6. Troubleshooting
+## 7. Troubleshooting
 
 | Symptom | Fix |
 |---------|-----|
@@ -154,7 +245,7 @@ the talk with one `ollama run` call so the live demo is snappy.
 
 ---
 
-## 7. Talking points
+## 8. Talking points
 
 - **Local / private / zero per-request cost** — the core story.
 - **The prompt is the product** — same pipeline reviews code or (with one prompt
