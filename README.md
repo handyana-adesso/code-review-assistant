@@ -225,7 +225,7 @@ port `dotnet run` prints.
 
 ---
 
-## 7. Troubleshooting
+## 6. Troubleshooting
 
 | Symptom | Fix |
 |---------|-----|
