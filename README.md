@@ -211,26 +211,7 @@ port `dotnet run` prints.
 
 ---
 
-## 5. What to show on stage
-
-1. Click **Load example** — a deliberately flawed C# method
-   (`sample-code/BadExample.cs`: SQL injection, undisposed connection, no null check).
-2. Click **Run review** → Gemma returns four sections: Security / Performance /
-   Best Practices / Concrete suggestion.
-3. **Prove it stays local.** Two options, strongest first:
-   - **Turn off Wi-Fi**, then run a review. It still works — the most visceral
-     proof there's no cloud call.
-   - Open Chrome **DevTools → Network** (F12). Reload, run a review: every
-     request goes to `localhost` only — no `api.anthropic.com`, no Google.
-     (DevTools shows the browser → .NET hop; the .NET → Ollama hop is local and
-     server-side, which the Wi-Fi-off test covers.)
-
-The first request is slower (the model loads into memory); pre-warm it before
-the talk with one `ollama run` call so the live demo is snappy.
-
----
-
-## 6. Configuration
+## 5. Configuration
 
 `appsettings.json`:
 ```json
@@ -254,16 +235,3 @@ the talk with one `ollama run` call so the live demo is snappy.
 | Out-of-memory / very slow | Switch to `gemma4:e2b` in `appsettings.json`. |
 | UI loads but review fails in dev | Check the Vite proxy port matches the `dotnet run` http port. |
 | Blank page after build | Confirm `npm run build` wrote into `CodeReviewAssistant/wwwroot`. |
-
----
-
-## 8. Talking points
-
-- **Local / private / zero per-request cost** — the core story.
-- **The prompt is the product** — same pipeline reviews code or (with one prompt
-  swap) writes commit messages; see the `CommitMessageGenerator` backup demo.
-- **Architecture decision** — local vs. API vs. hybrid; pair with the cost-curve slide.
-- **Clean minimal API at scale** — each concern in its own file, `Program.cs` just
-  wires them; new features get their own `XyzEndpoints.cs` + `MapXyzEndpoints()`.
-- **Extend it later** — caching identical reviews, batch mode, a VS Code extension,
-  or fine-tuning Gemma on your team's standards (allowed under Apache 2.0).
