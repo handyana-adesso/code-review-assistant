@@ -14,7 +14,7 @@
 
 A tiny, **fully local** AI-augmented app for the knowledge-sharing session.
 You paste code → a local Gemma 4 model reviews it for security, performance and
-best practices. No cloud, no API key, no per-request cost — the code never
+best practices. No cloud, no API key, no per-request cost. The code never
 leaves the machine.
 
 ```
@@ -23,7 +23,7 @@ React + Vite (TypeScript)  →  .NET Minimal API (C#)  →  Ollama (gemma4:e4b)
 ```
 
 For the talk, the React app is **built into the .NET app's `wwwroot`**, so the
-whole thing still runs as a single local process — see the two workflows below.
+whole thing still runs as a single local process, see the two workflows below.
 
 ---
 
@@ -170,7 +170,7 @@ sample-code/
 ```
 
 The browser only ever calls **your** endpoint, `/api/review`. The backend then
-calls **Ollama's** endpoint, `/api/generate` — that hop is server-side and local.
+calls **Ollama's** endpoint, `/api/generate`, that hop is server-side and local.
 
 ---
 
@@ -191,7 +191,7 @@ dotnet run             # serves the UI + the API from one origin
 
 Then open the URL `dotnet run` prints (e.g. http://localhost:5xxx). Two local
 processes total: `ollama serve` (usually already running) and `dotnet run`.
-No CORS, no dev server — this is what to present from.
+No CORS, no dev server. This is what to present from.
 
 ### 4B. While developing (hot reload)
 
@@ -219,7 +219,7 @@ port `dotnet run` prints.
 ```
 
 - **Output language** is set in `BuildPrompt()` inside `CodeReviewService.cs`.
-- `num_ctx` is raised to 8192 there too — the default 4K context is too small
+- `num_ctx` is raised to 8192 there too, the default 4K context is too small
   for real code. Very large inputs need more.
 - Low `temperature` (0.2) keeps reviews consistent rather than creative.
 
