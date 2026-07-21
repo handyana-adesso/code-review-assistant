@@ -21,7 +21,7 @@ public static class ReviewEndpoints
                 returns a structured review covering security, performance, and best practices.
 
                 The request body takes the code and an optional language hint. Everything runs
-                on the local machine — no cloud call, no API key. The first request may be
+                on the local machine (no cloud call, no API key). The first request may be
                 slower while the model loads into memory.
 
                 Returns 400 if the code is empty, and 502 if Ollama is unreachable or the model
