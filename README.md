@@ -231,7 +231,7 @@ port `dotnet run` prints.
 |---------|-----|
 | "Could not reach Ollama" | Start `ollama serve`; confirm http://localhost:11434 responds. |
 | "Ollama responded with 404" | Model not pulled: `ollama pull gemma4:e4b`. |
-| First response very slow | Normal — model loading into VRAM. Pre-warm before the talk. |
+| First response very slow | Normal, model loading into VRAM. Pre-warm before the talk. |
 | Out-of-memory / very slow | Switch to `gemma4:e2b` in `appsettings.json`. |
 | UI loads but review fails in dev | Check the Vite proxy port matches the `dotnet run` http port. |
 | Blank page after build | Confirm `npm run build` wrote into `CodeReviewAssistant/wwwroot`. |
