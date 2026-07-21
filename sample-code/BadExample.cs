@@ -1,6 +1,6 @@
 // ─────────────────────────────────────────────────────────────
-//  DEMO-CODE: bewusst fehlerhaft, zum Einfügen in der Live-Demo.
-//  Erwartete Funde von Gemma:
+//  DEMO-CODE: 
+//  Expected found by Gemma:
 //   • Sicherheit  → SQL-Injection (String-Konkatenation)
 //   • Performance → keine using/Dispose, Verbindung bleibt offen
 //   • Best Practice → keine Null-/Existenz-Prüfung, kein async,
@@ -18,8 +18,29 @@ public string GetUser(string id)
     return name;
 }
 
+// ── Optionales zweites Beispiel
 
-// ── Optionales zweites Beispiel (TypeScript), falls Zeit bleibt ──
+public async Task<decimal> GetOrderTotalAsync(int orderId)
+{
+    var order = _db.Orders.FirstOrDefault(o => o.Id == orderId);
+
+    decimal total = 0;
+    foreach (var item in order.Items)
+    {
+        total += item.Price * item.Quantity;
+    }
+
+    if (order.Customer.IsVip = true)
+        total = total - total * 0.1m;
+
+    var log = new StreamWriter("C:\\logs\\orders.txt", true);
+    log.WriteLine($"Order {orderId} total: {total}");
+
+    return total;
+}
+
+
+// ── Optionales drittes Beispiel (TypeScript) ──
 //
 // function calcTotal(items) {
 //   let total = 0;
